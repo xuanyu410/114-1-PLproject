@@ -11,10 +11,10 @@
 4. 天文論壇爬蟲：自動爬取 Astronomy.com 最新文章，透過 BeautifulSoup 抓取標題，並利用 jieba 分詞與 WordCloud 產生熱門話題文字雲。
 5. 觀星日誌：使用 Google Sheets 作為資料庫，支援觀測數據（時間、地點、天氣、器材、評分）的儲存、顯示與刪除，並整合 Catbox API 實現觀星照片上傳。
 ### 程式碼結構簡述
-- app.py: 主程式邏輯，包含多分頁導覽系統。
-- connect_to_gsheet(): 處理 Google Sheets 認證與連線。
-- upload_to_catbox(): 將觀星照片上傳至 Catbox 伺服器並回傳網址。
-- CSS Styles: 自定義深藍色星空主題，優化 UI/UX 體驗。
+1. app.py: 主程式邏輯，包含多分頁導覽系統。
+2. connect_to_gsheet(): 處理 Google Sheets 認證與連線。
+3. upload_to_catbox(): 將觀星照片上傳至 Catbox 伺服器並回傳網址。
+4. CSS Styles: 自定義深藍色星空主題，優化 UI/UX 體驗。
 ### 成果效益與價值
 1. 降低觀星入門門檻，提升大眾參與度
 2. 建立一站式的觀星平台，提高使用體驗的一致性
