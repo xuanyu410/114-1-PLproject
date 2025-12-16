@@ -227,34 +227,43 @@ except Exception as e:
     st.error("❌ 未偵測到 API Key！請確認已在 Colab 設定 secrets.toml")
     st.stop()
 
-# Google Sheets 連接函數 (保持不變)
 @st.cache_resource
 def connect_to_gsheet():
     try:
-        # 設定權限範圍
+        # 1. 設定權限範圍
         scopes = [
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive"
         ]
         
-        # 從 st.secrets 讀取你貼在 Streamlit 後台的 [gcp_service_account]
+        # 2. 從 Streamlit Secrets 讀取憑證 (確保名稱與 Secrets 標籤一致)
+        if "gcp_service_account" not in st.secrets:
+            st.error("❌ 在 Streamlit Secrets 中找不到 [gcp_service_account] 設定！")
+            return None
+            
         creds = Credentials.from_service_account_info(
             st.secrets["gcp_service_account"], 
             scopes=scopes
         )
         gc = gspread.authorize(creds)
         
-        # 開啟試算表 (建議使用 open_by_key 較穩定，ID 就是網址中 /d/ 後面那串)
-        # 你原本的 URL：https://docs.google.com/spreadsheets/d/1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw/
-        gsheets = gc.open_by_key('1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw')
+        # 3. 使用 ID 開啟 (這比使用 URL 更穩定)
+        # 你的 ID 是從網址中擷取的: 1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw
+        spreadsheet_id = "1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw"
+        gsheets = gc.open_by_key(spreadsheet_id)
         
-        # 取得指定的工作表
+        # 4. 指定工作表名稱 (請確認你的工作表名稱真的是 "工作表1")
         worksheet = gsheets.worksheet('工作表1')
         return worksheet
+        
+    except gspread.exceptions.SpreadsheetNotFound:
+        st.error("❌ 找不到試算表！請確認 ID 是否正確。")
+    except gspread.exceptions.APIError as e:
+        st.error(f"❌ Google API 錯誤: {e}")
+        st.info("💡 通常是因為沒有在 Google Sheet 點擊『共用』並加入服務帳戶 Email。")
     except Exception as e:
-        st.error(f"❌ Google Sheets 連接失敗: {str(e)}")
-        st.info("💡 提示：請檢查 Secrets 是否設定正確，並確認已將服務帳戶 Email 加入試算表的『共用』名單中。")
-        return None
+        st.error(f"❌ 發生非預期錯誤: {type(e).__name__} - {str(e)}")
+    return None
 
 # Google Sheets 操作函數 (保持不變)
 def load_logs_from_sheet(worksheet):
