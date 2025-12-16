@@ -259,10 +259,6 @@ def connect_to_gsheet():
         # 如果噴 PermissionError，請檢查是否在其他地方有 !mkdir 或 open('...','w')
         st.error(f"❌ Google Sheets 連接失敗: {str(e)}")
         return None
-# 初始化連線
-worksheet = connect_to_gsheet()
-if worksheet:
-    init_sheet(worksheet) # 確保表頭存在
 
 # Google Sheets 操作函數 (保持不變)
 def load_logs_from_sheet(worksheet):
