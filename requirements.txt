@@ -1,0 +1,13 @@
+streamlit
+streamlit-folium
+folium
+google-generativeai
+gspread
+google-auth
+pandas
+beautifulsoup4
+wordcloud
+jieba
+pytz
+requests
+Pillow
