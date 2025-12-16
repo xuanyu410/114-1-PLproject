@@ -13,7 +13,6 @@ import re
 import jieba
 import time
 import gspread
-from google.auth import default
 from PIL import Image
 import io
 import base64
@@ -230,40 +229,40 @@ except Exception as e:
 @st.cache_resource
 def connect_to_gsheet():
     try:
-        # 1. 設定權限範圍
+        # 設定權限範圍
         scopes = [
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive"
         ]
         
-        # 2. 從 Streamlit Secrets 讀取憑證 (確保名稱與 Secrets 標籤一致)
+        # 檢查 Secrets
         if "gcp_service_account" not in st.secrets:
-            st.error("❌ 在 Streamlit Secrets 中找不到 [gcp_service_account] 設定！")
+            st.error("❌ Secrets 中缺少 [gcp_service_account] 區段")
             return None
             
+        # 🟢 正確做法：從 st.secrets 讀取服務帳戶資訊
         creds = Credentials.from_service_account_info(
             st.secrets["gcp_service_account"], 
             scopes=scopes
         )
         gc = gspread.authorize(creds)
         
-        # 3. 使用 ID 開啟 (這比使用 URL 更穩定)
-        # 你的 ID 是從網址中擷取的: 1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw
+        # 使用 ID 開啟
         spreadsheet_id = "1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw"
         gsheets = gc.open_by_key(spreadsheet_id)
         
-        # 4. 指定工作表名稱 (請確認你的工作表名稱真的是 "工作表1")
+        # 檢查工作表名稱 (請確認工作表下方標籤真的叫 "工作表1")
         worksheet = gsheets.worksheet('工作表1')
         return worksheet
         
-    except gspread.exceptions.SpreadsheetNotFound:
-        st.error("❌ 找不到試算表！請確認 ID 是否正確。")
-    except gspread.exceptions.APIError as e:
-        st.error(f"❌ Google API 錯誤: {e}")
-        st.info("💡 通常是因為沒有在 Google Sheet 點擊『共用』並加入服務帳戶 Email。")
     except Exception as e:
-        st.error(f"❌ 發生非預期錯誤: {type(e).__name__} - {str(e)}")
-    return None
+        # 如果噴 PermissionError，請檢查是否在其他地方有 !mkdir 或 open('...','w')
+        st.error(f"❌ Google Sheets 連接失敗: {str(e)}")
+        return None
+# 初始化連線
+worksheet = connect_to_gsheet()
+if worksheet:
+    init_sheet(worksheet) # 確保表頭存在
 
 # Google Sheets 操作函數 (保持不變)
 def load_logs_from_sheet(worksheet):
