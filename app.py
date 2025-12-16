@@ -229,35 +229,31 @@ except Exception as e:
 @st.cache_resource
 def connect_to_gsheet():
     try:
-        # 設定權限範圍
         scopes = [
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive"
         ]
-        
-        # 檢查 Secrets
-        if "gcp_service_account" not in st.secrets:
-            st.error("❌ Secrets 中缺少 [gcp_service_account] 區段")
-            return None
-            
-        # 🟢 正確做法：從 st.secrets 讀取服務帳戶資訊
+
+        st.write("🔍 Secrets keys:", list(st.secrets.keys()))
+
         creds = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"], 
+            st.secrets["gcp_service_account"],
             scopes=scopes
         )
+
         gc = gspread.authorize(creds)
-        
-        # 使用 ID 開啟
-        spreadsheet_id = "1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw"
-        gsheets = gc.open_by_key(spreadsheet_id)
-        
-        # 檢查工作表名稱 (請確認工作表下方標籤真的叫 "工作表1")
-        worksheet = gsheets.worksheet('工作表1')
+        st.write("✅ gspread authorize 成功")
+
+        gsheets = gc.open_by_key("1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw")
+        st.write("✅ Spreadsheet 開啟成功")
+
+        worksheet = gsheets.worksheet("工作表1")
+        st.write("✅ Worksheet 連線成功")
+
         return worksheet
-        
+
     except Exception as e:
-        # 🟢 這裡會印出真正的錯誤原因
-        st.error(f"❌ 詳細錯誤訊息: {type(e).__name__} - {str(e)}")
+        st.error(f"❌ {type(e).__name__}: {e}")
         return None
 
 # Google Sheets 操作函數 (保持不變)
