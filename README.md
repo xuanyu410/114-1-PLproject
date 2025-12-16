@@ -1,6 +1,6 @@
 # 114-1 程式語言期末專題-你觀星嗎?
-[專題提案影片連結](https://youtu.be/x1fED5DUDnU)
-[網站網址](https://doyoustargaze.streamlit.app/)
+- [專題提案影片連結](https://youtu.be/x1fED5DUDnU)
+- [網站網址](https://doyoustargaze.streamlit.app/)
 ### 核心問題
 1. 缺乏入門指引，難以踏入觀星領域
 2. 看到星星卻不知道名稱與星座，缺少即時辨識工具
