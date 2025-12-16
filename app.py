@@ -244,7 +244,7 @@ def connect_to_gsheet():
 
         gc = gspread.authorize(creds)
 
-        gsheets = gc.open_by_url(
+        sh = gc.open_by_url(
             "https://docs.google.com/spreadsheets/d/1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw/edit"
         )
 
