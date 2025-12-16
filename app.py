@@ -21,6 +21,7 @@ import os
 import google.generativeai as genai
 import requests
 import pytz  # 🟢 新增：導入時區處理套件
+from google.oauth2.service_account import Credentials
 
 # CSS 樣式 (此部分保持不變)
 st.markdown("""
@@ -230,11 +231,26 @@ except Exception as e:
 @st.cache_resource
 def connect_to_gsheet():
     try:
-        creds, _ = default()
+        scope = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+
+        # 從 Streamlit secrets 讀取 service account
+        creds = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=scope
+        )
+
         gc = gspread.authorize(creds)
-        gsheets = gc.open_by_url('https://docs.google.com/spreadsheets/d/1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw/edit?gid=0#gid=0')
-        worksheet = gsheets.worksheet('工作表1')
+
+        gsheets = gc.open_by_url(
+            "https://docs.google.com/spreadsheets/d/1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw/edit"
+        )
+
+        worksheet = gsheets.worksheet("工作表1")
         return worksheet
+
     except Exception as e:
         st.error(f"❌ Google Sheets 連接失敗: {str(e)}")
         return None
