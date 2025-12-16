@@ -231,28 +231,29 @@ except Exception as e:
 @st.cache_resource
 def connect_to_gsheet():
     try:
-        scope = [
+        # 設定權限範圍
+        scopes = [
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive"
         ]
-
-        # 從 Streamlit secrets 讀取 service account
+        
+        # 從 st.secrets 讀取你貼在 Streamlit 後台的 [gcp_service_account]
         creds = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"],
-            scopes=scope
+            st.secrets["gcp_service_account"], 
+            scopes=scopes
         )
-
         gc = gspread.authorize(creds)
-
-        sh = gc.open_by_url(
-            "https://docs.google.com/spreadsheets/d/1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw/edit"
-        )
-
-        worksheet = gsheets.worksheet("工作表1")
+        
+        # 開啟試算表 (建議使用 open_by_key 較穩定，ID 就是網址中 /d/ 後面那串)
+        # 你原本的 URL：https://docs.google.com/spreadsheets/d/1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw/
+        gsheets = gc.open_by_key('1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw')
+        
+        # 取得指定的工作表
+        worksheet = gsheets.worksheet('工作表1')
         return worksheet
-
     except Exception as e:
         st.error(f"❌ Google Sheets 連接失敗: {str(e)}")
+        st.info("💡 提示：請檢查 Secrets 是否設定正確，並確認已將服務帳戶 Email 加入試算表的『共用』名單中。")
         return None
 
 # Google Sheets 操作函數 (保持不變)
