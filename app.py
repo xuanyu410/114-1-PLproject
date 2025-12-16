@@ -225,7 +225,6 @@ except Exception as e:
     # 使用 st.error 而非 st.exception 以確保輸出更簡潔
     st.error("❌ 未偵測到 API Key！請確認已在 Colab 設定 secrets.toml")
     st.stop()
-
 @st.cache_resource
 def connect_to_gsheet():
     try:
@@ -234,21 +233,22 @@ def connect_to_gsheet():
             "https://www.googleapis.com/auth/drive"
         ]
 
-        st.write("🔍 Secrets keys:", list(st.secrets.keys()))
+        st.write("Secrets keys:", list(st.secrets.keys()))
 
         creds = Credentials.from_service_account_info(
             st.secrets["gcp_service_account"],
             scopes=scopes
         )
+        st.write("✅ Credentials OK")
 
         gc = gspread.authorize(creds)
-        st.write("✅ gspread authorize 成功")
+        st.write("✅ gspread OK")
 
         gsheets = gc.open_by_key("1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw")
-        st.write("✅ Spreadsheet 開啟成功")
+        st.write("✅ Spreadsheet opened")
 
         worksheet = gsheets.worksheet("工作表1")
-        st.write("✅ Worksheet 連線成功")
+        st.write("✅ Worksheet connected")
 
         return worksheet
 
