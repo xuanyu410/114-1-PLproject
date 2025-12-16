@@ -256,8 +256,8 @@ def connect_to_gsheet():
         return worksheet
         
     except Exception as e:
-        # 如果噴 PermissionError，請檢查是否在其他地方有 !mkdir 或 open('...','w')
-        st.error(f"❌ Google Sheets 連接失敗: {str(e)}")
+        # 🟢 這裡會印出真正的錯誤原因
+        st.error(f"❌ 詳細錯誤訊息: {type(e).__name__} - {str(e)}")
         return None
 
 # Google Sheets 操作函數 (保持不變)
