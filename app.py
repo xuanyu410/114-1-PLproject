@@ -228,36 +228,37 @@ except Exception as e:
 @st.cache_resource
 def connect_to_gsheet():
     try:
+        # 1. 設定權限範圍
         scopes = [
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive"
         ]
+
+        # 2. 讀取 Secrets 並修正換行符號問題 (解決 RefreshError 的關鍵)
+        # 注意：這裡必須先轉成 dict 才能修改內容
         info = dict(st.secrets["gcp_service_account"])
         if "private_key" in info:
             info["private_key"] = info["private_key"].replace("\\n", "\n")
-        st.write("Secrets keys:", list(st.secrets.keys()))
 
-       creds = Credentials.from_service_account_info(
-            info,  # 改用處理過的 info
+        # 3. 建立憑證 (請注意此處縮排必須與上面對齊)
+        creds = Credentials.from_service_account_info(
+            info, 
             scopes=scopes
         )
-        st.write("✅ Credentials OK")
-
+        
+        # 4. 授權連線
         gc = gspread.authorize(creds)
-        st.write("✅ gspread OK")
 
-        sheet = gc.open_by_key(
-            "1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw"
-        )
-        st.write("✅ Spreadsheet opened")
+        # 5. 開啟試算表 (使用你的 ID)
+        sheet = gc.open_by_key("1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw")
 
+        # 6. 指定工作表名稱 (請確認你的 Google Sheet 下方分頁名稱真的是 "工作表1")
         worksheet = sheet.worksheet("工作表1")
-        st.write("✅ Worksheet connected")
 
         return worksheet
 
     except Exception as e:
-        st.error(f"❌ {type(e).__name__}: {e}")
+        st.error(f"❌ Google Sheets 連線失敗: {e}")
         return None
 
 # Google Sheets 操作函數 (保持不變)
