@@ -263,8 +263,10 @@ def connect_to_gsheet():
         return worksheet
 
     except Exception as e:
-        # 這裡會印出具體的錯誤訊息，幫助除錯
-        st.error(f"❌ Google Sheets 連線失敗: {e}")
+        import traceback
+        error_details = traceback.format_exc()
+        st.error(f"❌ Google Sheets 連線失敗 Details:")
+        st.code(error_details) # 這會印出完整的紅色錯誤訊息
         return None
 
 # Google Sheets 操作函數 (保持不變)
