@@ -227,31 +227,32 @@ except Exception as e:
     st.stop()
 @st.cache_resource
 def connect_to_gsheet():
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
+    try:
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
 
-    # 🔍 檢查 secrets
-    st.write("Secrets keys:", list(st.secrets.keys()))
+        st.write("Secrets keys:", list(st.secrets.keys()))
 
-    creds = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=scopes
-    )
-    st.write("✅ Credentials OK")
+        creds = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=scopes
+        )
+        st.write("✅ Credentials OK")
 
-    gc = gspread.authorize(creds)
-    st.write("✅ gspread OK")
+        gc = gspread.authorize(creds)
+        st.write("✅ gspread OK")
 
-    # 👉 建議用 open_by_url（權限錯比較好判斷）
-    sheet = gc.open_by_key("1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw")
-    st.write("✅ Spreadsheet opened")
+        sheet = gc.open_by_key(
+            "1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw"
+        )
+        st.write("✅ Spreadsheet opened")
 
-    worksheet = sheet.worksheet("工作表1")
-    st.write("✅ Worksheet connected")
+        worksheet = sheet.worksheet("工作表1")
+        st.write("✅ Worksheet connected")
 
-    return worksheet
+        return worksheet
 
     except Exception as e:
         st.error(f"❌ {type(e).__name__}: {e}")
