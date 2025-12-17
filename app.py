@@ -234,32 +234,45 @@ def connect_to_gsheet():
             "https://www.googleapis.com/auth/drive"
         ]
 
-        # 2. 讀取 Secrets 並修正換行符號問題 (解決 RefreshError 的關鍵)
-        # 注意：這裡必須先轉成 dict 才能修改內容
+        # 2. 讀取 Secrets
+        # 使用 dict() 確保從 st.secrets 取得的是字典
+        if "gcp_service_account" not in st.secrets:
+            st.error("❌ 未找到 Secrets 設定，請檢查 Streamlit 後台設定。")
+            return None
+
         info = dict(st.secrets["gcp_service_account"])
+
+        # 3. 處理 Private Key 的換行問題 (解決 RefreshError/FormatError)
+        # 為了相容性，我們同時處理 literal 的 "\\n" 和實際的換行
         if "private_key" in info:
             info["private_key"] = info["private_key"].replace("\\n", "\n")
 
-        # 3. 建立憑證 (請注意此處縮排必須與上面對齊)
+        # 4. 建立憑證
         creds = Credentials.from_service_account_info(
             info, 
             scopes=scopes
         )
         
-        # 4. 授權連線
+        # 5. 授權連線
         gc = gspread.authorize(creds)
 
-        # 5. 開啟試算表 (使用你的 ID)
+        # 6. 開啟試算表
         sheet = gc.open_by_key("1fBthlbG1xhZ2fQna5NYx8Fbj3XbzV0VvXkc93ihZRKw")
-
-        # 6. 指定工作表名稱 (請確認你的 Google Sheet 下方分頁名稱真的是 "工作表1")
         worksheet = sheet.worksheet("工作表1")
-
+        
         return worksheet
 
     except Exception as e:
+        # 這裡會印出具體的錯誤訊息，幫助除錯
         st.error(f"❌ Google Sheets 連線失敗: {e}")
         return None
+
+# 在主程式中呼叫
+ws = connect_to_gsheet()
+if ws:
+    st.success("✅ 連線成功！")
+    # 測試讀取資料
+    # st.write(ws.get_all_records())
 
 # Google Sheets 操作函數 (保持不變)
 def load_logs_from_sheet(worksheet):
