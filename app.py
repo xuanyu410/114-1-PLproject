@@ -267,13 +267,6 @@ def connect_to_gsheet():
         st.error(f"❌ Google Sheets 連線失敗: {e}")
         return None
 
-# 在主程式中呼叫
-ws = connect_to_gsheet()
-if ws:
-    st.success("✅ 連線成功！")
-    # 測試讀取資料
-    # st.write(ws.get_all_records())
-
 # Google Sheets 操作函數 (保持不變)
 def load_logs_from_sheet(worksheet):
     try:
