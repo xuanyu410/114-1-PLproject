@@ -232,11 +232,13 @@ def connect_to_gsheet():
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive"
         ]
-
+        info = dict(st.secrets["gcp_service_account"])
+        if "private_key" in info:
+            info["private_key"] = info["private_key"].replace("\\n", "\n")
         st.write("Secrets keys:", list(st.secrets.keys()))
 
-        creds = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"],
+       creds = Credentials.from_service_account_info(
+            info,  # 改用處理過的 info
             scopes=scopes
         )
         st.write("✅ Credentials OK")
